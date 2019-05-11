@@ -1,5 +1,6 @@
 import sys
 import pygame
+import math
 import os
 
 SCREEN_SIZE = 1040, 768
@@ -42,11 +43,18 @@ class PolyBricks:
                 "SCORE: " + str(self.score) + " LIVES: " + str(self.lives), False, TEXT_FILL)
             self.screen.blit(font_surface, (400, 5))
 
-    def draw_rectangle(self, x, y, width, length, orientation):
-        a = (x, y)
+    def rotate_point(self, landmark, point, orientation):
+        orientation *= math.pi/180.0 # Convert to radian
+        return ((point[0] * math.cos(orientation) - point[1] * math.sin(orientation))+landmark[0],
+                (point[0] * math.sin(orientation) + point[1] * math.cos(orientation))+landmark[1])
 
-    def show_rectangles(self):
-        self.draw_rectangle()
+    def draw_rectangle(self, x, y, width, length, orientation, color):
+        pointlist = [(x,y)]
+        pointlist.append(self.rotate_point((x,y), (width, 0), orientation))
+        pointlist.append(self.rotate_point((x, y),  (width, length), orientation))
+        pointlist.append(self.rotate_point((x,y), (0, length), orientation))
+        pygame.draw.polygon(self.screen, color, pointlist, 0)
+
 
     def run(self):
         while 1:
@@ -55,7 +63,10 @@ class PolyBricks:
                     quit()
 
             self.screen.fill(BACKGROUND)
-            self.show_rectangles()
+            self.draw_rectangle(
+                SCREEN_SIZE[0]/2, SCREEN_SIZE[1]/2, 150, 50, 45, BRICK_COLOR)
+            self.draw_rectangle(
+                SCREEN_SIZE[0]/2, SCREEN_SIZE[1]/2, 150, 50, 0, TEXT_FILL)
             self.show_stats()
             pygame.display.flip()
 
