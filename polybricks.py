@@ -63,6 +63,12 @@ class PolyBricks:
             for rectangle_id in RECTANGLES:
                 color = SELECTED_BRICK_COLOR if rectangle_id == SELECTED_RECTANGLE_ID else DEFAULT_BRICK_COLOR
                 pygame.draw.polygon(self.screen, color, RECTANGLES[rectangle_id], 0)
+                debug_color = (50, 50, 50)
+                for point in RECTANGLES[rectangle_id]:
+                    debug_color = [x+50 for x in debug_color]
+                    point = [int(x) for x in point]
+                    pygame.draw.circle(self.screen, debug_color, point, 15, 0)
+
         else:
             self.init_rectangles()
             
@@ -71,12 +77,14 @@ class PolyBricks:
         radius = SCREEN_SIZE[1]/4
         side = 2*radius*math.sin(math.pi/RECTANGLES_NUMBER)
         thickness = 50
-        angle = 360/RECTANGLES_NUMBER
+        angle_gain = 360/RECTANGLES_NUMBER
         RECTANGLES[0] = self.get_rectangle(center[0]-side/2, center[1]-radius, side, thickness, 0)
         #RECTANGLES[0][1][0] -> x of 3nd point of rectangle with id 0
         print(RECTANGLES[0])
-        i = 1
-        RECTANGLES[i] = self.get_rectangle(RECTANGLES[i-1][1][0], RECTANGLES[i-1][0][1], side, thickness, angle)
+        angle = 0
+        for i in range(1, RECTANGLES_NUMBER-1):
+            angle += angle_gain
+            RECTANGLES[i] = self.get_rectangle(RECTANGLES[i-1][1][0], RECTANGLES[i-1][0][1], side, thickness, angle)
 
         self.show_rectangles()
         
