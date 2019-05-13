@@ -17,8 +17,7 @@ RECTANGLES_NUMBER = 8
 RECTANGLES = {}
 SELECTED_RECTANGLE_ID = 0
 
-DEFAULT_BRICK_COLOR = (0, 255, 0)
-SELECTED_BRICK_COLOR = (255, 255, 0)
+BRICK_COLOR = (0, 255, 0)
 
 
 class PolyBricks:
@@ -60,32 +59,26 @@ class PolyBricks:
 
     def show_rectangles(self):
         if RECTANGLES:
-            for rectangle_id in RECTANGLES:
-                color = SELECTED_BRICK_COLOR if rectangle_id == SELECTED_RECTANGLE_ID else DEFAULT_BRICK_COLOR
-                pygame.draw.polygon(self.screen, color, RECTANGLES[rectangle_id], 0)
-                debug_color = (50, 50, 50)
-                for point in RECTANGLES[rectangle_id]:
-                    debug_color = [x+50 for x in debug_color]
-                    point = [int(x) for x in point]
-                    pygame.draw.circle(self.screen, debug_color, point, 15, 0)
-
+            pygame.draw.polygon(self.screen, BRICK_COLOR,
+                                RECTANGLES[SELECTED_RECTANGLE_ID], 0)
         else:
             self.init_rectangles()
             
     def init_rectangles(self):
-        center = [x/2 for x in SCREEN_SIZE]
+        center = [int(x/2) for x in SCREEN_SIZE]
         radius = SCREEN_SIZE[1]/4
         side = 2*radius*math.sin(math.pi/RECTANGLES_NUMBER)
         thickness = 50
         angle_gain = 360/RECTANGLES_NUMBER
-        RECTANGLES[0] = self.get_rectangle(center[0]-side/2, center[1]-radius, side, thickness, 0)
-        #RECTANGLES[0][1][0] -> x of 3nd point of rectangle with id 0
-        print(RECTANGLES[0])
-        angle = 0
-        for i in range(1, RECTANGLES_NUMBER-1):
-            angle += angle_gain
-            RECTANGLES[i] = self.get_rectangle(RECTANGLES[i-1][1][0], RECTANGLES[i-1][0][1], side, thickness, angle)
 
+        angle = 0
+        extrem = int(center[0]-side/2), int(center[1] - math.sqrt(radius**2 - (side/2)**2))
+        for i in range(0, RECTANGLES_NUMBER):
+            RECTANGLES[i] = self.get_rectangle(
+                extrem[0], extrem[1], side, -thickness, angle)
+            extrem = [int(x) for x in self.rotate_point(extrem, (side, 0), angle)]
+            angle += angle_gain
+            
         self.show_rectangles()
         
 
