@@ -15,7 +15,6 @@ STATE_GAME_OVER = 3
 
 RECTANGLES_NUMBER = 8
 RECTANGLES = {}
-SELECTED_RECTANGLE_ID = 0
 
 BRICK_COLOR = (0, 255, 0)
 
@@ -27,6 +26,7 @@ class PolyBricks:
 
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
         pygame.display.set_caption("Polybricks")
+        self.selected_rectangle_id = 0
 
         if pygame.font:
             self.font = pygame.font.Font(None, 30)
@@ -38,6 +38,7 @@ class PolyBricks:
     def init_game(self):
         self.lives = 3
         self.score = 0
+        self.old_keys = {}
 
     def show_stats(self):
         if self.font:
@@ -60,7 +61,7 @@ class PolyBricks:
     def show_rectangles(self):
         if RECTANGLES:
             pygame.draw.polygon(self.screen, BRICK_COLOR,
-                                RECTANGLES[SELECTED_RECTANGLE_ID], 0)
+                                RECTANGLES[self.selected_rectangle_id], 0)
         else:
             self.init_rectangles()
             
@@ -81,6 +82,20 @@ class PolyBricks:
             
         self.show_rectangles()
         
+    def check_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT] and not self.old_keys[pygame.K_LEFT]:
+            self.selected_rectangle_id = (self.selected_rectangle_id-1)%RECTANGLES_NUMBER
+
+        if keys[pygame.K_RIGHT] and not self.old_keys[pygame.K_RIGHT]:
+            self.selected_rectangle_id = (self.selected_rectangle_id+1) % RECTANGLES_NUMBER
+
+        self.old_keys = keys
+        #if keys[pygame.K_SPACE] and self.state == STATE_BALL_IN_PADDLE:
+
+        #elif keys[pygame.K_RETURN] and (self.state == STATE_GAME_OVER or self.state == STATE_WON):
+            #self.init_game()
 
     def run(self):
         while 1:
@@ -88,6 +103,7 @@ class PolyBricks:
                 if event.type == pygame.QUIT:
                     quit()
 
+            self.check_input()
             self.screen.fill(BACKGROUND)
             self.show_rectangles()
             self.show_stats()
