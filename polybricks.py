@@ -42,9 +42,8 @@ class PolyBricks:
 
     def show_stats(self):
         if self.font:
-            font_surface = self.font.render(
-                "SCORE: " + str(self.score) + " LIVES: " + str(self.lives), False, TEXT_FILL)
-            self.screen.blit(font_surface, (400, 5))
+            font_surface = self.font.render("SCORE: " + str(self.score) + " LIVES: " + str(self.lives), False, TEXT_FILL)
+            self.screen.blit(font_surface, ((SCREEN_SIZE[0]-font_surface.get_width())/2, 5))
 
     def rotate_point(self, landmark, point, orientation):
         orientation *= math.pi/180.0 # Convert to radian
