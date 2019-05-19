@@ -38,6 +38,7 @@ class PolyBricks:
     def init_game(self):
         self.lives = 3
         self.score = 0
+        self.state = STATE_PAUSED
         self.old_keys = {}
 
     def show_stats(self):
@@ -89,6 +90,12 @@ class PolyBricks:
 
         if keys[pygame.K_RIGHT] and not self.old_keys[pygame.K_RIGHT]:
             self.selected_rectangle_id = (self.selected_rectangle_id+1) % RECTANGLES_NUMBER
+
+        if keys[pygame.K_SPACE] and self.state == STATE_PAUSED:
+            self.ball_vel = [6, -6]
+            self.state = STATE_PLAYING
+        elif keys[pygame.K_RETURN] and (self.state == STATE_GAME_OVER or self.state == STATE_WON):
+            self.init_game()
 
         self.old_keys = keys
         #if keys[pygame.K_SPACE] and self.state == STATE_BALL_IN_PADDLE:
